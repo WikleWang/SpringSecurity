@@ -1,10 +1,12 @@
 package com.amt.mysecurity;
 
+import com.amt.mysecurity.security.CustomPermissionEvaluator;
 import com.amt.mysecurity.web.VerifyServlet;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 
 @SpringBootApplication
 public class MySecurityApplication {
@@ -22,5 +24,6 @@ public class MySecurityApplication {
         registration.addUrlMappings("/getVerifyCode");
         return registration;
     }
+
 
 }

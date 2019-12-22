@@ -60,4 +60,18 @@ public class LoginController {
     public String printUser() {
         return "如果你看见这句话，说明你有ROLE_USER角色";
     }
+
+    @RequestMapping("/admin/r")
+    @ResponseBody
+    @PreAuthorize("hasPermission('/admin/r','r')")
+    public String printAdminR() {
+        return "如果你看见这句话，说明你访问/admin路径具有r权限";
+    }
+
+    @RequestMapping("/admin/c")
+    @ResponseBody
+    @PreAuthorize("hasPermission('/admin/c','c')")
+    public String printAdminC() {
+        return "如果你看见这句话，说明你访问/admin路径具有c权限";
+    }
 }
