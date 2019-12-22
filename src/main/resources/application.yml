@@ -6,6 +6,11 @@ spring:
     password: Ww920109
   main:
     allow-bean-definition-overriding: true
+  redis:
+    host: localhost
+    port: 6379
+  session:
+    store-type: redis
 #开启Mybatis下划线命名转驼峰命名
 mybatis:
   configuration:
@@ -15,3 +20,10 @@ mybatis:
 logging:
   level:
     com.amt.mysecurity.mapper: DEBUG
+
+# session 过期时间，单位：秒
+server:
+  servlet:
+    session:
+      timeout: 360
+
