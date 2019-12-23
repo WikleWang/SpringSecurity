@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.session.SessionInformation;
@@ -84,6 +85,12 @@ public class LoginController {
             }
         }
         return "操作成功，清理session共" + count + "个";
+    }
+
+    @GetMapping("/me")
+    @ResponseBody
+    public Object me(Authentication authentication) {
+        return authentication;
     }
 
 
