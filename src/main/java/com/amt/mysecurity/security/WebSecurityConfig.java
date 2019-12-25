@@ -1,5 +1,6 @@
 package com.amt.mysecurity.security;
 
+import com.amt.mysecurity.security.sms.SmsCodeAuthenticationSecurityConfig;
 import com.amt.mysecurity.web.VerifyFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +31,7 @@ import javax.sql.DataSource;
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomUserDetailsService userDetailsService;
+
 
     @Autowired
     private DataSource dataSource;
@@ -112,51 +114,51 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private CustomLogoutSuccessHandler logoutSuccessHandler;
 
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                // 如果有允许匿名的url，填在下面
-                .antMatchers("/getVerifyCode").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                // 设置登陆页
-                .formLogin().loginPage("/login")
-                // 设置登陆成功页
-                //.defaultSuccessUrl("/").permitAll()
-                .successHandler(customAuthenticationSuccessHandler).permitAll()
-                // 登录失败Url
-                //.failureUrl("/login/error")
-                .failureHandler(customAuthenticationFailureHandler).permitAll()
-                // 自定义登陆用户名和密码参数，默认为username和password
-                //.usernameParameter("username")
-                //.passwordParameter("password")
-                // 指定authenticationDetailsSource
-                .authenticationDetailsSource(authenticationDetailsSource)
-                .and()
-                .logout()
-                .logoutUrl("/signout")
-                .deleteCookies("JSESSIONID")
-                .logoutSuccessHandler(logoutSuccessHandler)
-                .permitAll()
-                // 自动登录
-                .and().rememberMe()
-                .tokenRepository(persistentTokenRepository())
-                // 有效时间：单位s
-                .tokenValiditySeconds(60)
-                .userDetailsService(userDetailsService)
-                .and()
-                .sessionManagement()
-                .invalidSessionUrl("/login/invalid")
-                .maximumSessions(1)
-                // 当达到最大值时，是否保留已经登录的用户
-                .maxSessionsPreventsLogin(false)
-                // 当达到最大值时，旧用户被踢出后的操作
-                .expiredSessionStrategy(new CustomExpiredSessionStrategy())
-                .sessionRegistry(sessionRegistry());
-
-        // 关闭CSRF跨域
-        http.csrf().disable();
-    }
+//    @Override
+//    protected void configure(HttpSecurity http) throws Exception {
+//        http.authorizeRequests()
+//                // 如果有允许匿名的url，填在下面
+//                .antMatchers("/getVerifyCode").permitAll()
+//                .anyRequest().authenticated()
+//                .and()
+//                // 设置登陆页
+//                .formLogin().loginPage("/login")
+//                // 设置登陆成功页
+//                //.defaultSuccessUrl("/").permitAll()
+//                .successHandler(customAuthenticationSuccessHandler).permitAll()
+//                // 登录失败Url
+//                //.failureUrl("/login/error")
+//                .failureHandler(customAuthenticationFailureHandler).permitAll()
+//                // 自定义登陆用户名和密码参数，默认为username和password
+//                //.usernameParameter("username")
+//                //.passwordParameter("password")
+//                // 指定authenticationDetailsSource
+//                .authenticationDetailsSource(authenticationDetailsSource)
+//                .and()
+//                .logout()
+//                .logoutUrl("/signout")
+//                .deleteCookies("JSESSIONID")
+//                .logoutSuccessHandler(logoutSuccessHandler)
+//                .permitAll()
+//                // 自动登录
+//                .and().rememberMe()
+//                .tokenRepository(persistentTokenRepository())
+//                // 有效时间：单位s
+//                .tokenValiditySeconds(60)
+//                .userDetailsService(userDetailsService)
+//                .and()
+//                .sessionManagement()
+//                .invalidSessionUrl("/login/invalid")
+//                .maximumSessions(1)
+//                // 当达到最大值时，是否保留已经登录的用户
+//                .maxSessionsPreventsLogin(false)
+//                // 当达到最大值时，旧用户被踢出后的操作
+//                .expiredSessionStrategy(new CustomExpiredSessionStrategy())
+//                .sessionRegistry(sessionRegistry());
+//
+//        // 关闭CSRF跨域
+//        http.csrf().disable();
+//    }
 
 
     @Override
@@ -164,6 +166,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // 设置拦截忽略文件夹，可以对静态资源放行
         web.ignoring().antMatchers("/css/**", "/js/**");
     }
+
+    @Autowired
+    private SmsCodeAuthenticationSecurityConfig smsCodeAuthenticationSecurityConfig;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http.apply(smsCodeAuthenticationSecurityConfig).and().authorizeRequests()
+                // 如果有允许匿名的url，填在下面
+                .antMatchers("/sms/**").permitAll()
+                .anyRequest().authenticated()
+                .and()
+                // 设置登陆页
+                .formLogin().loginPage("/login")
+                // 设置登陆成功页
+                .defaultSuccessUrl("/").permitAll()
+                .and()
+                .logout().permitAll();
+
+        // 关闭CSRF跨域
+        http.csrf().disable();
+    }
+
+
 
 
     /**
